@@ -34,4 +34,5 @@ class ProjectUploadView(APIView):
             return Response({'message': 'Project structure is valid.',
                                 'folderStructure': folder_structure}, status=status.HTTP_200_OK)
         else:
+            
             return Response({'error': error}, status=status.HTTP_400_BAD_REQUEST)
