@@ -1,9 +1,3 @@
-# import logging
-
-# # Configure logging
-# logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-# logger = logging.getLogger(__name__)
-
 def validate_backend_structure(folder_structure):
     try:
         app_js_found = False
@@ -85,6 +79,7 @@ def validate_backend_structure(folder_structure):
                 if not found:
                     not_found.append(file)
             errors = [f"Missing required file or folder: {file}" for file in not_found]
+            print(errors)
             return False, errors
     except Exception as e:
         # logger.error(f"An error occurred during backend structure validation: {str(e)}")

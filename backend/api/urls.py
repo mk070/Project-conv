@@ -3,5 +3,5 @@ from . import views
 
 urlpatterns = [
     path('upload/', views.ProjectUploadView.as_view(), name='upload'),
-    # path('convert/', views.ProjectConvertView.as_view(), name='convert'),
+    path('convert/', views.ProjectConvertView.as_view(), name='convert'),
 ]
