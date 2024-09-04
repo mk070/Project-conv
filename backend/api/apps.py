@@ -6,9 +6,6 @@ class ApiConfig(AppConfig):
     name = 'api'
 
     def ready(self):
-        upload_dir = os.path.join('media', 'uploads')
-        repo_dir = os.path.join('media', 'repos')
-        if not os.path.exists(upload_dir):
-            os.makedirs(upload_dir)
-        if not os.path.exists(repo_dir):
-            os.makedirs(repo_dir)
+        UPLOADS_DIR = 'UPLOADS'
+        if not os.path.exists(UPLOADS_DIR):
+            os.makedirs(UPLOADS_DIR)

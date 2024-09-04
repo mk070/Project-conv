@@ -16,6 +16,12 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+UPLOADS_PATH = os.path.join(BASE_DIR, 'UPLOADS')    
+CONVERTED_PATH = os.path.join(BASE_DIR, 'CONVERTED_FOLDER')
+
+if not os.path.exists(CONVERTED_PATH):
+    os.makedirs(CONVERTED_PATH)
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -33,13 +39,6 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5174",  # Allow requests from Vite frontend
 ]
 
-# Media files (uploads)
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-# Static files (CSS, JavaScript, Images)
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Add this to include API routes
 ROOT_URLCONF = 'project_converter.urls'
