@@ -1,7 +1,7 @@
 node_modules
 .venv
 __pycache__
-simple-todo-mern-stack-app-master.zip
+simple-todo-mern-stack-app-master
 CONVERTED_FOLDER
 migrations
--UPLOADS
+UPLOADS
