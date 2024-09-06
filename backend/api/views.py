@@ -3,8 +3,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from . import utils
 from .additionals.analyzer import analyze_mern
-from .additionals.subprocess import subprocess_django
-from backend import settings
+from .additionals.converters import mern_to_django
+from django.conf import settings
 
 class ProjectUploadView(APIView):
     def post(self, request, *args, **kwargs):
@@ -29,14 +29,15 @@ class ProjectUploadView(APIView):
         source_stack = request.data.get('sourceStack')
 
         if source_stack == "mern":
-            is_valid, error = analyze_mern.validate_backend_structure(folder_structure)
+            is_valid, response = analyze_mern.validate_backend_structure(folder_structure)
+            request.session['MERN_PROJECT_FILES'] = response
             print('\n-----------------------------------------------------------------------\n')
 
         if is_valid:
             return Response({'message': 'Project structure is valid.',
                                 'folderStructure': folder_structure}, status=status.HTTP_200_OK)
         else: 
-            return Response({'error': error}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': response}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProjectConvertView(APIView):
@@ -44,11 +45,13 @@ class ProjectConvertView(APIView):
         print('\n-----------------------------------------------------------------------\n')
         
         # Get the target stack from the request (e.g., 'mern', 'django')
+        source_stack = request.data.get('sourceStack')
         target_stack = request.data.get('targetStack')
 
-        if target_stack == "django":
-            subprocess_django.create_django_project(settings.CONVERTED_PATH)
+        if source_stack == "mern" and target_stack == "django":
+            status, message = mern_to_django.run(request.session['MERN_PROJECT_FILES'], settings.CONVERTED_PATH)
             
             print('\n-----------------------------------------------------------------------\n')
+            return Response({'message': 'Project converted successfully.'}, status=status.HTTP_200_OK)
 
             

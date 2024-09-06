@@ -34,6 +34,19 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+
+# Optional session settings
+SESSION_COOKIE_SECURE = False  # Set to True for HTTPS in production
+SESSION_COOKIE_HTTPONLY = True  # Prevent JavaScript from accessing the session cookie
+SESSION_COOKIE_SAMESITE = 'Lax'  # Control cross-origin cookie behavior, even if not used in frontend
+
+# Expire sessions when the browser closes
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+SESSION_COOKIE_AGE = 1209600 # 2 weeks in seconds
+
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # Allow requests from Vite frontend
 ]
