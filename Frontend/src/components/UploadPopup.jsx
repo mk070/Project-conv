@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Modal from './common/Modal';
 
-const UploadPopup = ({ onFileUpload }) => {
+const UploadPopup = ({ onFileUpload,sourceStack }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [uploadType, setUploadType] = useState('');
   const [file, setFile] = useState(null);
@@ -12,8 +12,11 @@ const UploadPopup = ({ onFileUpload }) => {
 
     if (uploadType === 'zip') {
       formData.append('file', file);
+      formData.append('sourceStack', sourceStack);
     } else if (uploadType === 'github') {
       formData.append('github_link', githubLink);
+      formData.append('sourceStack', sourceStack);
+
     }
 
     onFileUpload(formData);

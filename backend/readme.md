@@ -8,6 +8,7 @@ django-admin startproject backend
 
 python manage.py startapp <app_name>
 
+
 session variables are used in django
 
 ### Frontend Configuration:
@@ -26,3 +27,5 @@ fetch('http://localhost:8000/api/set_project_files', {
 
 ## LAST WORKED ON
 converters/mern_to_django -> need to write prompt for settings
+=======
+

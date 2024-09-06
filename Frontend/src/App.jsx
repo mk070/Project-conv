@@ -42,7 +42,7 @@ const App = () => {
           onSourceChange={(e) => setSourceStack(e.target.value)}
           onTargetChange={(e) => setTargetStack(e.target.value)}
         />
-        <UploadPopup onFileUpload={handleFileUpload} />
+        <UploadPopup onFileUpload={handleFileUpload} sourceStack={sourceStack}/>
         {status && <p className="mt-4 text-center text-gray-600">{status}</p>}
         {folderStructure && (
           <div className="mt-6">
