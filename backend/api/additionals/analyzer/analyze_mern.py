@@ -1,3 +1,7 @@
+import logging
+
+logger = logging.getLogger('api')
+
 def validate_backend_structure(folder_structure):
     try:
         app_js_path = None
@@ -28,14 +32,12 @@ def validate_backend_structure(folder_structure):
         for file in required_files["backend_files"]:
             found_files = search_for_items([file], folder_structure[0])
             if found_files:
-                # logger.info(f"{file} found in a valid backend folder.")
-                print(f"{file} found in a valid backend folder at {found_files[0]['path']}")
+                logger.info(f"{file} found in a valid backend folder at {found_files[0]['path']}")
                 backend_file_found = True
                 app_js_path = found_files[0]['path']
                 break
         if not backend_file_found:
-            # logger.error("None of the required backend files (app.js, server.js, index.js, main.js) were found in a valid backend folder.")
-            print("None of the required backend files (app.js, server.js, index.js, main.js) were found in a valid backend folder.")
+            logger.error("None of the required backend files (app.js, server.js, index.js, main.js) were found in a valid backend folder.")
 
         # Validate the backend folders (models, controllers, routes)
         for folder in required_files["backend_folders"]:
@@ -47,21 +49,20 @@ def validate_backend_structure(folder_structure):
                     models_path = found_folders[0]['path']
                 elif folder == "routes":
                     routes_path = found_folders[0]['path']
-                print(f"{folder} folder found at {found_folders[0]['path']}.")
+                logger.info(f"{folder} folder found at {found_folders[0]['path']}.")
             else:
-                # logger.error(f"{folder} folder not found.")
-                print(f"{folder} folder not found.")
+                logger.error(f"{folder} folder not found.")
 
         # Validate the package.json file
         package_json_path = validate_backend_package_json(folder_structure)
         if package_json_path:
-            print(f"package.json found at {package_json_path}.")
+            logger.info(f"package.json found at {package_json_path}.")
         else:
-            print("package.json not found in a valid backend folder.")
+            logger.error("package.json not found in a valid backend folder.")
         
         # Return the validation results
         files = {
-            "app.js": app_js_path,
+            "app_js": app_js_path,
             "controllers": controllers_path,
             "models": models_path,
             "routes": routes_path,
@@ -76,11 +77,10 @@ def validate_backend_structure(folder_structure):
                 if not path:
                     not_found.append(file)
             errors = [f"Missing required file or folder: {file}" for file in not_found]
-            print(errors)
+            logger.error(f"Backend structure validation failed: {errors}")
             return False, errors
     except Exception as e:
-        # logger.error(f"An error occurred during backend structure validation: {str(e)}")
-        print(f"An error occurred during backend structure validation: {str(e)}")
+        logger.error(f"An error occurred during backend structure validation: {str(e)}")
         return False, str(e)
 
 

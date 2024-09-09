@@ -9,8 +9,8 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
+from api.utils import clean_folder
 import os
-
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -18,10 +18,25 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 UPLOADS_PATH = os.path.join(BASE_DIR, 'UPLOADS')    
 CONVERTED_PATH = os.path.join(BASE_DIR, 'CONVERTED_FOLDER')
+LOGS_DIR = os.path.join(BASE_DIR, 'LOGS')
+
+if not os.path.exists(LOGS_DIR):
+    os.makedirs(LOGS_DIR)
+
+# Clear the logs folder every time the server starts
+for file in os.listdir(LOGS_DIR):
+    file_path = os.path.join(LOGS_DIR, file)
+    try:
+        if os.path.isfile(file_path):
+            os.unlink(file_path)
+    except Exception as e:
+        print(e)
 
 if not os.path.exists(CONVERTED_PATH):
     os.makedirs(CONVERTED_PATH)
 
+clean_folder(UPLOADS_PATH)
+clean_folder(CONVERTED_PATH)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -50,10 +65,6 @@ SESSION_COOKIE_AGE = 1209600 # 2 weeks in seconds
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # Allow requests from Vite frontend
 ]
-
-
-# Add this to include API routes
-ROOT_URLCONF = 'project_converter.urls'
 
 
 # Application definition
@@ -148,3 +159,45 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Logging configuration
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+        'api': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'LOGS/api.log'),
+            'formatter': 'verbose',
+        },  
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'api': {  # Logger for your api app
+            'handlers': ['console', 'api'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+   },
+}
+
