@@ -64,6 +64,7 @@ SESSION_COOKIE_AGE = 1209600 # 2 weeks in seconds
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # Allow requests from Vite frontend
+    "http://localhost:5174",  # Allow requests from Vite frontend
 ]
 
 
