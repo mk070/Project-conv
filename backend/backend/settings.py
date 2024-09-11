@@ -67,6 +67,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5174",  # Allow requests from Vite frontend
 ]
 
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
 
 # Application definition
 

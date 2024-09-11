@@ -3,7 +3,9 @@ import git
 import zipfile
 import shutil
 import stat
+import io
 from rest_framework.exceptions import APIException
+from django.conf import settings
 import logging
 
 logger = logging.getLogger('api')
@@ -89,15 +91,21 @@ def parse_project_structure(base_path):
         raise APIException(f"Failed to parse project structure: {str(e)}")
 
 
-def zip_project(project_path, zip_path):
+def zip_project(project_path):
     try:
-        with zipfile.ZipFile(zip_path, 'w') as zipf:
+        zip_buffer = io.BytesIO()
+        with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zipf:
             for root, dirs, files in os.walk(project_path):
                 for file in files:
                     file_path = os.path.join(root, file)
                     zipf.write(file_path, os.path.relpath(file_path, project_path))
+        # Save zip file to CONVERTED_FOLDER
+        zip_file_path = os.path.join(settings.CONVERTED_PATH, 'django_converted.zip')
+        with open(zip_file_path, 'wb') as f:
+            f.write(zip_buffer.getvalue())
+        return True, ''
     except Exception as e:
-        raise APIException(f"Failed to zip project: {str(e)}")
+        return False, f'Failed to create zip file: {str(e)}'
 
 
 def clean_folder(FOLDER_PATH):
