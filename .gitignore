@@ -6,8 +6,6 @@ CONVERTED_FOLDER
 migrations
 UPLOADS
 LOGS
-# Ignore SQLite database file
-db.sqlite3
 
 # Ignore Python bytecode files
 *.pyc
@@ -15,3 +13,4 @@ __pycache__/
 
 # Ignore environment files
 .env
+backend/db.sqlite3
