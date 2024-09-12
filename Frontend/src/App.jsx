@@ -3,7 +3,8 @@ import UploadPopup from './components/UploadPopup';
 import ProjectStructure from './components/ProjectStructure';
 import StackSelector from './components/StackSelector';
 import ConvertButton from './components/ConvertButton';
-import { uploadProject, convertProject } from './api';
+import { uploadProject, convertProject ,downloadProject} from './api';
+import DownloadButton from './components/DownloadButton';
 
 const App = () => {
   const [sourceStack, setSourceStack] = useState('');
@@ -31,11 +32,20 @@ const App = () => {
       setStatus('Conversion failed. Please try again.');
     }
   };
+  const handleDownload = async () => {
+    setStatus('Downloading...');
+    try {
+      await downloadProject();
+      setStatus('Downloaded successful!');
+    } catch (error) {
+      setStatus('Download failed. Please try again.');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-3xl bg-white p-6 rounded-lg shadow-lg">
-        <h1 className="text-3xl font-bold text-center mb-8">Project Converter</h1>
+        <h1 className="text-3xl font-bold text-center mb-8">Project Converter.</h1>
         <StackSelector
           sourceStack={sourceStack}
           targetStack={targetStack}
@@ -48,6 +58,7 @@ const App = () => {
           <div className="mt-6">
             <ProjectStructure structure={folderStructure} />
             <ConvertButton onConvert={handleConversion} />
+            <DownloadButton onDownload={handleDownload}/>
           </div>
         )}
       </div>
