@@ -4,6 +4,8 @@ import zipfile
 import shutil
 import stat
 import io
+import psutil
+import time
 from rest_framework.exceptions import APIException
 from django.conf import settings
 import logging
@@ -108,10 +110,12 @@ def zip_project(project_path):
         return False, f'Failed to create zip file: {str(e)}'
 
 
-def clean_folder(FOLDER_PATH):
-    if os.path.exists(FOLDER_PATH):
+def clean_folder(folder_path):
+    if os.path.exists(folder_path):
         def remove_readonly(func, path, _):
             os.chmod(path, stat.S_IWRITE)
             func(path)
-        shutil.rmtree(FOLDER_PATH, onerror=remove_readonly)
-    os.makedirs(FOLDER_PATH)
+        
+        shutil.rmtree(folder_path, onerror=remove_readonly)
+    os.makedirs(folder_path)
+    logger.info(f'Folder cleaned successfully: {folder_path}')

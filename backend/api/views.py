@@ -10,6 +10,7 @@ from .globals import MERN_PROJECT_FILES
 import os
 import logging
 
+
 logger = logging.getLogger('api')
 
 
@@ -44,7 +45,6 @@ class ProjectUploadView(APIView):
         if is_valid:
             logger.info('Analyzation successful. Project structure is valid.')
             print('\n-----------------------------------------------------------------------\n')
-            print('MERN_PROJECT_FILES_DATA in UPLOAD: ', )
             return Response({'message': 'Project structure is valid.',
                                 'folderStructure': folder_structure}, status=status.HTTP_200_OK)
         else: 
@@ -68,8 +68,6 @@ class ProjectConvertView(APIView):
             try:
                 logger.info('Converting MERN project to Django project...')
                 global MERN_PROJECT_FILES
-                print('MERN_PROJECT_FILES_DATA in CONVERT: ', MERN_PROJECT_FILES)
-                utils.clean_folder(settings.CONVERTED_PATH)
                 conversion_status, message = mern_to_django.run(MERN_PROJECT_FILES, settings.CONVERTED_PATH)
                 print('\n-----------------------------------------------------------------------\n')
 

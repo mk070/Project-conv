@@ -1,6 +1,7 @@
 import subprocess
 import os
 from api import utils
+from django.conf import settings
 import logging
 
 logger = logging.getLogger('api')
@@ -38,6 +39,8 @@ def create_django_project(PATH):
 
         # Include the app's urls.py in the project's urls.py
         include_app_urls(base_dir, project_name, app_name)
+
+        os.chdir(settings.BASE_DIR)
 
         logger.info("Django project setup completed successfully")
         print('\n-----------------------------------------------------------------------\n')

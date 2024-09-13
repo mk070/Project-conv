@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from api.utils import clean_folder
 import os
 from pathlib import Path
+import logging
+
+logger = logging.getLogger('api')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,14 +26,21 @@ LOGS_DIR = os.path.join(BASE_DIR, 'LOGS')
 if not os.path.exists(LOGS_DIR):
     os.makedirs(LOGS_DIR)
 
-# Clear the logs folder every time the server starts
-for file in os.listdir(LOGS_DIR):
-    file_path = os.path.join(LOGS_DIR, file)
-    try:
-        if os.path.isfile(file_path):
-            os.unlink(file_path)
-    except Exception as e:
-        print(e)
+def clear_logs_folder(folder_path):
+    for file in os.listdir(folder_path):
+        file_path = os.path.join(folder_path, file)
+        try:
+            if os.path.isfile(file_path):
+                with open(file_path, 'w'):
+                    pass
+                logger.info(f"Cleared content of log file: {file_path}")
+        except PermissionError as e:
+            logger.error(f"PermissionError: Could not clear {file_path}. File may be in use.")
+        except Exception as e:
+            logger.error(f"Error clearing {file_path}: {e}")
+
+clear_logs_folder(LOGS_DIR)
+
 
 if not os.path.exists(CONVERTED_PATH):
     os.makedirs(CONVERTED_PATH)
