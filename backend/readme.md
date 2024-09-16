@@ -26,6 +26,6 @@ fetch('http://localhost:8000/api/set_project_files', {
 
 
 ## LAST WORKED ON
-converters/mern_to_django -> need to write prompt for settings
+need to return the zip file response to frontend. In frontend need to handle getting the zip file and download option
 =======
 

@@ -9,19 +9,44 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
+from api.utils import clean_folder
 import os
-
 from pathlib import Path
+import logging
+
+logger = logging.getLogger('api')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 UPLOADS_PATH = os.path.join(BASE_DIR, 'UPLOADS')    
 CONVERTED_PATH = os.path.join(BASE_DIR, 'CONVERTED_FOLDER')
+LOGS_DIR = os.path.join(BASE_DIR, 'LOGS')
+
+if not os.path.exists(LOGS_DIR):
+    os.makedirs(LOGS_DIR)
+
+def clear_logs_folder(folder_path):
+    for file in os.listdir(folder_path):
+        file_path = os.path.join(folder_path, file)
+        try:
+            if os.path.isfile(file_path):
+                with open(file_path, 'w'):
+                    pass
+                logger.info(f"Cleared content of log file: {file_path}")
+        except PermissionError as e:
+            logger.error(f"PermissionError: Could not clear {file_path}. File may be in use.")
+        except Exception as e:
+            logger.error(f"Error clearing {file_path}: {e}")
+
+clear_logs_folder(LOGS_DIR)
+
 
 if not os.path.exists(CONVERTED_PATH):
     os.makedirs(CONVERTED_PATH)
 
+clean_folder(UPLOADS_PATH)
+clean_folder(CONVERTED_PATH)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -52,10 +77,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5174",  # Allow requests from Vite frontend
 ]
 
-
-# Add this to include API routes
-ROOT_URLCONF = 'project_converter.urls'
-
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
 
 # Application definition
 
@@ -149,3 +172,45 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Logging configuration
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+        'api': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'LOGS/api.log'),
+            'formatter': 'verbose',
+        },  
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'api': {  # Logger for your api app
+            'handlers': ['console', 'api'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+   },
+}
+

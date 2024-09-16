@@ -2,6 +2,9 @@ from api.additionals.subprocess_projects import subprocess_django
 from api.additionals.llm import mern_to_django_llm
 from api.additionals.remove_markers import remove_code_markers
 import os
+import logging
+
+logger = logging.getLogger('api')
 
 def to_requirements(MERN_PROJECT_FILES, PATH):
     try:
@@ -12,12 +15,16 @@ def to_requirements(MERN_PROJECT_FILES, PATH):
         package_json_content = ""
         with open(package_json_path, 'r') as file:
             package_json_content = file.read()
-                
+
+        logger.info(f'Converting requirements from package.json: {package_json_path}')
+
         response = mern_to_django_llm.to_requirements_llm(package_json_content)
         clean_response = remove_code_markers(response)
         
         with open(requirements_txt_path, 'w') as file:
             file.write(clean_response)
+        
+        logger.info(f'Requirements converted successfully to: {requirements_txt_path}')
 
         return True, "Requirements converted successfully."    
 
@@ -39,11 +46,15 @@ def to_settings(MERN_PROJECT_FILES, PATH):
         with open(settings_path, 'r') as file:
             settings_content = file.read()
 
+        logger.info(f'Converting settings from app.js: {app_js_path}')
+
         response = mern_to_django_llm.to_settings_llm(app_js_content, settings_content)
         clean_response = remove_code_markers(response)
         
         with open(settings_path, 'w') as file:
             file.write(clean_response)
+
+        logger.info(f'Settings converted successfully to: {settings_path}')
 
         return True, "Settings converted successfully."    
 
@@ -61,12 +72,16 @@ def to_models(MERN_PROJECT_FILES, PATH):
         for file in os.listdir(mern_models_folder):
             with open(os.path.join(mern_models_folder, file), 'r') as f:
                 models_content += f"### {file}\n{f.read()}\n"
+        
+        logger.info(f'Converting models from MERN project: {mern_models_folder}')
 
         response = mern_to_django_llm.to_models_llm(models_content)
         clean_response = remove_code_markers(response)
         
         with open(models_path, 'w') as file:
             file.write(clean_response)
+
+        logger.info(f'Models converted successfully to: {models_path}')
 
         return True, "Models converted successfully."    
 
@@ -85,11 +100,15 @@ def to_views(MERN_PROJECT_FILES, PATH):
             with open(os.path.join(mern_controllers_folder, file), 'r') as f:
                 controllers_content += f"### {file}\n{f.read()}\n"
 
+        logger.info(f'Converting views from MERN project: {mern_controllers_folder}')
+
         response = mern_to_django_llm.to_views_llm(controllers_content)
         clean_response = remove_code_markers(response)
         
         with open(views_path, 'w') as file:
             file.write(clean_response)
+
+        logger.info(f'Views converted successfully to: {views_path}')
 
         return True, "Views converted successfully."    
 
@@ -108,11 +127,15 @@ def to_urls(MERN_PROJECT_FILES, PATH):
             with open(os.path.join(mern_routes_folder, file), 'r') as f:
                 routes_content += f"### {file}\n{f.read()}\n"
 
+        logger.info(f'Converting URLs from MERN project: {mern_routes_folder}')
+
         response = mern_to_django_llm.to_urls_llm(routes_content)
         clean_response = remove_code_markers(response)
         
         with open(urls_path, 'w') as file:
             file.write(clean_response)
+
+        logger.info(f'URLs converted successfully to: {urls_path}')
 
         return True, "URLs converted successfully."
     
@@ -121,24 +144,26 @@ def to_urls(MERN_PROJECT_FILES, PATH):
 
 
 def run(MERN_PROJECT_FILES, PATH):
-    subprocess_django.create_django_project(PATH)
+    try:
+        subprocess_django.create_django_project(PATH)
+
+        conversions = [
+            ("requirements", to_requirements),
+            ("settings", to_settings),
+            ("models", to_models),
+            ("views", to_views),
+            ("urls", to_urls),
+        ]
+
+        for name, conversion_fn in conversions:
+            status, message = conversion_fn(MERN_PROJECT_FILES, PATH)
+            if not status:
+                logger.error(f'Failed to convert {name}: {message}')
+                return False, message
+
+        logger.info('MERN project converted to Django successfully.')
+        return True, "MERN project converted to Django successfully."
     
-    req_status, req_message = to_requirements(MERN_PROJECT_FILES, PATH)
-    if not req_status:
-        return False, req_message
-    
-    settings_status, settings_message = to_settings(MERN_PROJECT_FILES, PATH)
-    if not settings_status:
-        return False, settings_message
-
-    models_status, models_message = to_models(MERN_PROJECT_FILES, PATH)
-    if not models_status:
-        return False, models_message
-
-    views_status, views_message = to_views(MERN_PROJECT_FILES, PATH)
-    if not views_status:
-        return False, views_message
-
-    urls_status, urls_message = to_urls(MERN_PROJECT_FILES, PATH)
-    if not urls_status:
-        return False, urls_message   
+    except Exception as e:
+        logger.error(f'Failed to convert project: {str(e)}')
+        return False, f"Failed to convert project: {str(e)}"

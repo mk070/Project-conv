@@ -1,6 +1,10 @@
 import subprocess
 import os
 from api import utils
+from django.conf import settings
+import logging
+
+logger = logging.getLogger('api')
 
 def create_django_project(PATH):
     try:
@@ -13,14 +17,22 @@ def create_django_project(PATH):
         # Change the current directory to the CONVERTED_FOLDER
         os.chdir(base_dir)
 
+        logger.info(f"Creating Django project at: {base_dir}")
+
         # Create the Django project
         subprocess.run(['django-admin', 'startproject', project_name], check=True)
 
         # Navigate to the newly created Django project directory
         os.chdir(os.path.join(base_dir, project_name))
 
+        logger.info(f"Django project created successfully at: {base_dir}")
+
+        logger.info(f"Creating Django app: \"{app_name}\"")
+
         # Create the app within the Django project
         subprocess.run(['python', 'manage.py', 'startapp', app_name], check=True)
+
+        logger.info(f"Django app created successfully: \"{app_name}\"")
 
         # Create the urls.py file in the app directory
         create_urls_py(base_dir, project_name, app_name)
@@ -28,11 +40,15 @@ def create_django_project(PATH):
         # Include the app's urls.py in the project's urls.py
         include_app_urls(base_dir, project_name, app_name)
 
-        print(f"Django Project Created Successfully at: {base_dir}")
-    
-    except Exception as e:
-        print(f"Failed to create Django project: {str(e)}")
+        os.chdir(settings.BASE_DIR)
 
+        logger.info("Django project setup completed successfully")
+        print('\n-----------------------------------------------------------------------\n')
+
+    except Exception as e:
+        logger.error(f"Failed to create Django project: {str(e)}")
+        print('\n-----------------------------------------------------------------------\n')
+        raise Exception(f"Failed to create Django project: {str(e)}")
 
 def create_urls_py(base_dir, project_name, app_name):    
     # Path to the app directory
@@ -51,6 +67,8 @@ urlpatterns = [
     # Write the content to urls.py
     with open(urls_file_path, 'w') as f:
         f.write(urls_content)
+
+    logger.info(f"Created urls.py (backend) at: {urls_file_path}")
     
 
 def include_app_urls(base_dir, project_name, app_name):
@@ -79,6 +97,6 @@ def include_app_urls(base_dir, project_name, app_name):
             f.write(content)
             f.truncate()
 
-        print(f"Updated urls.py at: {proj_urls_file_path}")
+        logger.info(f"Updated urls.py at: {proj_urls_file_path}")
     else:
-        print(f"urls.py not found at: {proj_urls_file_path}")
+        logger.error(f"urls.py not found at: {proj_urls_file_path}")

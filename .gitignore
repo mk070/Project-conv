@@ -5,3 +5,12 @@ simple-todo-mern-stack-app-master
 CONVERTED_FOLDER
 migrations
 UPLOADS
+LOGS
+
+# Ignore Python bytecode files
+*.pyc
+__pycache__/
+
+# Ignore environment files
+.env
+backend/db.sqlite3
