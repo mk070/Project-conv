@@ -1,6 +1,7 @@
-django
-google-generativeai
-python-dotenv
-django-cors-headers
-gitpython
-djangorestframework
+django==5.1
+google-generativeai==0.7.2
+python-dotenv==1.0.1
+django-cors-headers==4.4.0
+gitpython==3.1.43
+djangorestframework==3.15.2
+subprocess.run==0.0.8
