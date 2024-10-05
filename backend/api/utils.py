@@ -4,8 +4,6 @@ import zipfile
 import shutil
 import stat
 import io
-import psutil
-import time
 from rest_framework.exceptions import APIException
 from django.conf import settings
 import logging
